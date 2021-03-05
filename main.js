@@ -1,18 +1,17 @@
-
 const imgUrl = './de.farefinder.json';
 
 (async function() {
-    try{
-        const datas = await getDataFly("KRK", 30, "pl","2021-03-10", "2022-03-02",300);
+    try {
+        const datas = await getDataFly("KRK", 30, "pl", "2021-03-10", "2022-03-02", 300);
         const destination = selectCountryByCode(datas.fares);
         displayResults(destination)
 
-    }catch (err){
+    } catch (err) {
         console.error(err.message)
     }
 })()
 
-async function getDataFly(iataCode, limit,market,dateFrom,dateTo,price) {
+async function getDataFly(iataCode, limit, market, dateFrom, dateTo, price) {
     const response = await fetch(`https://www.ryanair.com/api/farfnd/3/oneWayFares?&departureAirportIataCode=${iataCode}&language=pl&limit=${limit}&market=${market}-pl&offset=0&outboundDepartureDateFrom=${dateFrom}&outboundDepartureDateTo=${dateTo}&priceValueTo=${price}`);
     if (response.ok) {
         return response.json();
@@ -20,12 +19,11 @@ async function getDataFly(iataCode, limit,market,dateFrom,dateTo,price) {
     throw Error(`error from server: ${response.statusText}`);
 }
 
-
 function selectCountryByCode(data) {
     const countryByCode = data.filter(destination => {
-        return (destination.outbound.arrivalAirport.city.countryCode.match(/es|se|de|fr/gi))
+        return destination.outbound.arrivalAirport.city.countryCode.match(/es|se|de|fr/gi)
     })
-    const selectedData = countryByCode.map(destination => {
+    return countryByCode.map(destination => {
         return {
             countryName: destination.outbound.arrivalAirport.countryName,
             cityName: destination.outbound.arrivalAirport.city.name,
@@ -35,7 +33,6 @@ function selectCountryByCode(data) {
             iataCode: destination.outbound.arrivalAirport.iataCode,
         }
     })
-    return selectedData;
 }
 
 
